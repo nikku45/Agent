@@ -20,6 +20,8 @@ import com.oncytech.emilocker.receiver.AdminReceiver
 class RegistrationActivity : AppCompatActivity() {
 
     private lateinit var statusText: TextView
+    private lateinit var tokenInput: android.widget.EditText
+    private lateinit var serverIpInput: android.widget.EditText
     private lateinit var activateButton: Button
     private lateinit var dpm: DevicePolicyManager
     private lateinit var adminComponent: ComponentName
@@ -31,6 +33,8 @@ class RegistrationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registration)
 
         statusText = findViewById(R.id.statusText)
+        tokenInput = findViewById(R.id.tokenInput)
+        serverIpInput = findViewById(R.id.serverIpInput)
         activateButton = findViewById(R.id.activateButton)
         
         dpm = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
@@ -45,6 +49,7 @@ class RegistrationActivity : AppCompatActivity() {
         enrollmentToken = enrollmentToken ?: legacyExtras?.getString("enrollmentToken")
 
         if (enrollmentToken != null) {
+            tokenInput.setText(enrollmentToken)
             Toast.makeText(this, "Found Token: $enrollmentToken", Toast.LENGTH_LONG).show()
         }
 
@@ -57,10 +62,11 @@ class RegistrationActivity : AppCompatActivity() {
                 intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, getString(R.string.device_admin_description))
                 startActivityForResult(intent, 100)
             } else {
-                if (enrollmentToken != null) {
-                    startRegistration()
+                enrollmentToken = tokenInput.text.toString()
+                if (enrollmentToken.isNullOrEmpty()) {
+                    Toast.makeText(this, "Please enter an enrollment token", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "No Enrollment Token found. Please scan QR.", Toast.LENGTH_SHORT).show()
+                    startRegistration()
                 }
             }
         }
@@ -86,8 +92,10 @@ class RegistrationActivity : AppCompatActivity() {
 
     private fun startRegistration() {
         val token = enrollmentToken ?: return
+        val serverIp = serverIpInput.text.toString()
+        
         statusText.text = "Registering device..."
-        Log.d("EMILocker", "Starting registration for token: $token")
+        Log.d("EMILocker", "Starting registration for token: $token at $serverIp")
         
         val request = RegisterRequest(
             enrollmentToken = token,
@@ -99,7 +107,7 @@ class RegistrationActivity : AppCompatActivity() {
 
         Log.d("EMILocker", "Sending Request: $request")
 
-        RetrofitClient.getService().register(request).enqueue(object : retrofit2.Callback<RegisterResponse> {
+        RetrofitClient.getService(serverIp).register(request).enqueue(object : retrofit2.Callback<RegisterResponse> {
             override fun onResponse(call: retrofit2.Call<RegisterResponse>, response: retrofit2.Response<RegisterResponse>) {
                 val body = response.body()
                 Log.d("EMILocker", "Response Received: ${response.code()} - ${body?.message}")

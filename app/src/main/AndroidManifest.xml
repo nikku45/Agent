@@ -25,6 +25,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="emilocker.oncytech.com" android:pathPrefix="/enroll" />
+                <data android:scheme="emilocker" android:host="enroll" />
             </intent-filter>
         </activity>
 

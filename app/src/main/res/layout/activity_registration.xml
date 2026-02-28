@@ -22,16 +22,31 @@
         android:id="@+id/statusText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Status: Checking..."
+        android:text="Status: Device Admin Required"
         android:textSize="16sp"
         android:gravity="center"
-        android:layout_marginBottom="48dp"/>
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/serverIpInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Server IP (e.g. 192.168.1.5:5000)"
+        android:inputType="textUri"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/tokenInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enrollment Token (Paste here)"
+        android:layout_marginBottom="32dp"/>
 
     <Button
         android:id="@+id/activateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enable Admin"
+        android:text="1. Enable Device Admin"
         android:backgroundTint="#5B4FDB"
         android:textColor="#FFFFFF"
         android:padding="16dp"/>
