@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">EMILocker Agent</string>
+    <string name="device_admin_label">EMILocker Protection</string>
+    <string name="device_admin_description">This app must be active to protect your device under the EMI plan.</string>
+</resources>
