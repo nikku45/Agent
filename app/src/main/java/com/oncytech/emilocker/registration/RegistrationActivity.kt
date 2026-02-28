@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -86,6 +87,7 @@ class RegistrationActivity : AppCompatActivity() {
     private fun startRegistration() {
         val token = enrollmentToken ?: return
         statusText.text = "Registering device..."
+        Log.d("EMILocker", "Starting registration for token: $token")
         
         val request = RegisterRequest(
             enrollmentToken = token,
@@ -95,21 +97,28 @@ class RegistrationActivity : AppCompatActivity() {
             osVersion = android.os.Build.VERSION.RELEASE
         )
 
+        Log.d("EMILocker", "Sending Request: $request")
+
         RetrofitClient.getService().register(request).enqueue(object : retrofit2.Callback<RegisterResponse> {
             override fun onResponse(call: retrofit2.Call<RegisterResponse>, response: retrofit2.Response<RegisterResponse>) {
                 val body = response.body()
+                Log.d("EMILocker", "Response Received: ${response.code()} - ${body?.message}")
+                
                 if (response.isSuccessful && body?.success == true) {
                     saveDeviceToken(body.deviceToken)
+                    Log.d("EMILocker", "Registration Success. Token Saved.")
                     statusText.text = "Registered Successfully!"
                     Toast.makeText(this@RegistrationActivity, "Security Active", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
                 } else {
+                    Log.e("EMILocker", "Registration Failed: ${body?.message}")
                     statusText.text = "Failed: ${body?.message ?: "Unknown error"}"
                 }
             }
 
             override fun onFailure(call: retrofit2.Call<RegisterResponse>, t: Throwable) {
+                Log.e("EMILocker", "Network Error: ${t.message}", t)
                 statusText.text = "Connection Error: ${t.message}"
             }
         })
